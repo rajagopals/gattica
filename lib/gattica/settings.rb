@@ -22,11 +22,13 @@ module Gattica
         :email => nil,        # eg: 'email@gmail.com'
         :password => nil,     # eg: '$up3r_$ekret'
         :token => nil,
+        :api_key => nil,
         :profile_id => nil,
         :debug => false,
         :headers => {},
         :logger => Logger.new(STDOUT),
-        :verify_ssl => true
+        :verify_ssl => true,
+        :http_proxy => {}
     }
 
     FILTER_METRIC_OPERATORS = %w{ == != > < >= <= }

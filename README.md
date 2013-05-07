@@ -119,8 +119,8 @@ Here are some additional examples that illustrate different things you can do wi
         :start_date   => '2011-01-01',
         :end_date     => '2011-04-01',
         :dimensions   => ['month', 'year'],
-        :metrics      => ['visits']
-        :sort         => ['-visits'],
+        :metrics      => ['visits'],
+        :sort         => ['-visits']
     })
 
 ### Limiting results
@@ -130,7 +130,7 @@ Here are some additional examples that illustrate different things you can do wi
         :start_date   => '2011-01-01',
         :end_date     => '2011-04-01',
         :dimensions   => ['month', 'year'],
-        :metrics      => ['visits']
+        :metrics      => ['visits'],
         :max_results  => 25 
     })
 
@@ -184,7 +184,7 @@ Here are some additional examples that illustrate different things you can do wi
     
     # => "month,year,visitors\n\n01,2011, ...."
 
-    # Long  CSV will get you a few additional columns:
+    # Long CSV will get you a few additional columns:
     long_csv = data.to_csv            
     
     # => "id,updated,title,month,year,visitors\n\nhttp:// ..."
@@ -407,6 +407,17 @@ Google expects a special header in all HTTP requests called 'Authorization'.  Ga
         :headers => {'My-Special-Header':'my_custom_value'}
     })
         
+Using http proxy
+-----------------
+
+You can set http proxy settings when you instantiate the Gattica object:
+
+    ga = Gattica.new({ 
+        :email => 'email@gmail.com', 
+        :password => 'password',
+        :http_proxy => { :host => 'proxy.example.com', :port => 8080, :user => 'username', :password => 'password' }
+    })
+    
 <hr />
 
 History

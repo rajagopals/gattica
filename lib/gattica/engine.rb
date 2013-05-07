@@ -16,6 +16,7 @@ module Gattica
     # +:profile_id+::   Use this Google Analytics profile_id (default is nil)
     # +:timeout+::      Set Net:HTTP timeout in seconds (default is 300)
     # +:token+::        Use an authentication token you received before
+    # +:api_key+::      The Google API Key for your project
     # +:verify_ssl+::   Verify SSL connection (default is true)
     def initialize(options={})
       @options = Settings::DEFAULT_OPTIONS.merge(options)
@@ -153,12 +154,19 @@ module Gattica
 
     ######################################################################
     private
+    
+    # Add the Google API key to the query string, if one is specified in the options.
+    
+    def add_api_key(query_string)
+      query_string += "&key=#{@options[:api_key]}" if @options[:api_key]
+      query_string
+    end
 
     # Does the work of making HTTP calls and then going through a suite of tests on the response to make
     # sure it's valid and not an error
 
     def do_http_get(query_string)
-      response = @http.get(query_string, @headers)
+      response = @http.get(add_api_key(query_string), @headers)
 
       # error checking
       if response.code != '200'
@@ -267,11 +275,20 @@ module Gattica
 
     def create_http_connection(server)
       port = Settings::USE_SSL ? Settings::SSL_PORT : Settings::NON_SSL_PORT
-      @http = Net::HTTP.new(server, port)
+      @http = @options[:http_proxy].any? ? http_proxy.new(server, port) : Net::HTTP.new(server, port)
       @http.use_ssl = Settings::USE_SSL
       @http.verify_mode = @options[:verify_ssl] ? Settings::VERIFY_SSL_MODE : Settings::NO_VERIFY_SSL_MODE
       @http.set_debug_output $stdout if @options[:debug]
       @http.read_timeout = @options[:timeout] if @options[:timeout]
+    end
+
+    def http_proxy
+      proxy_host = @options[:http_proxy][:host]
+      proxy_port = @options[:http_proxy][:port]
+      proxy_user = @options[:http_proxy][:user]
+      proxy_pass = @options[:http_proxy][:password]
+
+      Net::HTTP::Proxy(proxy_host, proxy_port, proxy_user, proxy_pass)
     end
 
     # Sets instance variables from options given during initialization and
