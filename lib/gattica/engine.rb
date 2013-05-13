@@ -55,11 +55,11 @@ module Gattica
         }
 
         # Fill in the goals
-        response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles/~all/goals?max-results=10000")
-        xml = Nokogiri.XML(response)
-        @user_accounts.each do |ua|
-          xml.root.xpath('xmlns:entry').each { |e| ua.set_goals(e) }
-        end
+        # response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles/~all/goals?max-results=10000")
+        # xml = Nokogiri.XML(response)
+        # @user_accounts.each do |ua|
+        #   xml.root.xpath('xmlns:entry').each { |e| ua.set_goals(e) }
+        # end
 
         # Fill in the account name
         response = do_http_get("/analytics/v2.4/management/accounts?max-results=10000")

@@ -12,13 +12,13 @@ module Gattica
     def initialize(xml)
       @id = xml.at_xpath('xmlns:id').text
       @updated = DateTime.parse(xml.at_xpath('xmlns:updated').text)
-      @account_id = xml.at_xpath("dxp:property[@name='ga:accountId']").attributes['value'].to_i
-      @account_name = xml.at_xpath("dxp:property[@name='ga:accountName']").attributes['value']
+      @account_id = xml.at_xpath("dxp:property[@name='ga:accountId']").attributes['value'].value.to_i
+      @account_name = xml.at_xpath("dxp:property[@name='ga:accountName']").attributes['value'].value
 
-      @title = xml.at_xpath("dxp:property[@name='ga:profileName']").attributes['value']
-      @table_id = xml.at_xpath("dxp:property[@name='dxp:tableId']").attributes['value']
-      @profile_id = xml.at_xpath("dxp:property[@name='ga:profileId']").attributes['value'].to_i
-      @web_property_id = xml.at_xpath("dxp:property[@name='ga:webPropertyId']").attributes['value']
+      @title = xml.at_xpath("dxp:property[@name='ga:profileName']").attributes['value'].value
+      @table_id = xml.at_xpath("dxp:property[@name='dxp:tableId']").attributes['value'].value
+      @profile_id = xml.at_xpath("dxp:property[@name='ga:profileId']").attributes['value'].value.to_i
+      @web_property_id = xml.at_xpath("dxp:property[@name='ga:webPropertyId']").attributes['value'].value
 
       # @goals = xml.search('ga:goal').collect do |goal| {
       #   :active => goal.attributes['active'],

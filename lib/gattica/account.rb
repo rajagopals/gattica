@@ -4,9 +4,9 @@ module Gattica
     
     attr_reader :id, :updated, :title, :table_id, :account_id, :account_name,
                 :profile_id, :web_property_id, :goals
-  
+ 
     def initialize(xml)
-      @id = xml.at_xpath("link[@rel='self']").attributes['href']
+      @id = xml.at_xpath("xmlns:link[@rel='self']").attributes['href'].value
       @updated = DateTime.parse(xml.at_xpath('xmlns:updated').text)
       @account_id = find_account_id(xml)
 
@@ -18,19 +18,19 @@ module Gattica
     end
 
     def xpath_value(xml, xpath)
-      xml.at_xpath(xpath).attributes['value']
+      xml.at_xpath(xpath).attributes['value'].value
     end
 
     def find_account_id(xml)
-      xml.at_xpath("dxp:property[@name='ga:accountId']").attributes['value'].to_i
+      xml.at_xpath("dxp:property[@name='ga:accountId']").attributes['value'].value.to_i
     end
 
     def find_account_name(xml)
-      xml.at_xpath("dxp:property[@name='ga:accountName']").attributes['value']
+      xml.at_xpath("dxp:property[@name='ga:accountName']").attributes['value'].value
     end
 
     def find_profile_id(xml)
-      xml.at_xpath("dxp:property[@name='ga:profileId']").attributes['value'].to_i
+      xml.at_xpath("dxp:property[@name='ga:profileId']").attributes['value'].value.to_i
     end
 
     def set_account_name(account_feed_entry)
@@ -43,10 +43,10 @@ module Gattica
       if @profile_id == find_profile_id(goals_feed_entry)
         goal = goals_feed_entry.root.xpath('ga:goal').first
         @goals.push({
-          :active => goal.attributes['active'],
-          :name => goal.attributes['name'],
-          :number => goal.attributes['number'].to_i,
-          :value => goal.attributes['value'].to_f
+          :active => goal.attributes['active'].value,
+          :name => goal.attributes['name'].value,
+          :number => goal.attributes['number'].value.to_i,
+          :value => goal.attributes['value'].value.to_f
         })
       end
     end    
