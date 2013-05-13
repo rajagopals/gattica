@@ -6,7 +6,7 @@ require 'uri'
 require 'cgi'
 require 'logger'
 require 'rubygems'
-require 'hpricot'
+require 'nokogiri'
 require 'yaml'
 
 require 'gattica/engine'

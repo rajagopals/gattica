@@ -49,23 +49,23 @@ module Gattica
 
         # get profiles
         response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles?max-results=10000")
-        xml = Hpricot(response)
-        @user_accounts = xml.search(:entry).collect { |profile_xml| 
+        xml = Nokogiri.XML(response)
+        @user_accounts = xml.root.xpath('xmlns:entry').collect { |profile_xml| 
           Account.new(profile_xml) 
         }
 
         # Fill in the goals
         response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles/~all/goals?max-results=10000")
-        xml = Hpricot(response)
+        xml = Nokogiri.XML(response)
         @user_accounts.each do |ua|
-          xml.search(:entry).each { |e| ua.set_goals(e) }
+          xml.root.xpath('xmlns:entry').each { |e| ua.set_goals(e) }
         end
 
         # Fill in the account name
         response = do_http_get("/analytics/v2.4/management/accounts?max-results=10000")
-        xml = Hpricot(response)
+        xml = Nokogiri.XML(response)
         @user_accounts.each do |ua|
-          xml.search(:entry).each { |e| ua.set_account_name(e) }
+          xml.root.xpath('xmlns:entry').each { |e| ua.set_account_name(e) }
         end
 
       end
@@ -90,8 +90,8 @@ module Gattica
       if @user_segments.nil?
         create_http_connection('www.googleapis.com')
         response = do_http_get("/analytics/v2.4/management/segments?max-results=10000")
-        xml = Hpricot(response)
-        @user_segments = xml.search("dxp:segment").collect { |s| 
+        xml = Nokogiri.XML(response)
+        @user_segments = xml.root.xpath('dxp:segment').collect { |s| 
           Segment.new(s) 
         }
       end
@@ -139,7 +139,7 @@ module Gattica
       @logger.debug(query_string) if @debug
       create_http_connection('www.googleapis.com')
       data = do_http_get("/analytics/v2.4/data?#{query_string}")
-      return DataSet.new(Hpricot.XML(data))
+      return DataSet.new(Nokogiri.XML(data).root)
     end
 
 

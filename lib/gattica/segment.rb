@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'hpricot'
+require 'nokogiri'
 
 module Gattica
   class Segment
@@ -10,7 +10,7 @@ module Gattica
     def initialize(xml)
       @id = xml.attributes['id']
       @name = xml.attributes['name']
-      @definition = xml.at("dxp:definition").inner_html
+      @definition = xml.at_xpath("dxp:definition").text
     end
     
   end
