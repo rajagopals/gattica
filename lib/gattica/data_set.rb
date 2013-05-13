@@ -14,7 +14,7 @@ module Gattica
       @items_per_page = xml.at_xpath('openSearch:itemsPerPage').text.to_i
       @start_date = Date.parse(xml.at_xpath('dxp:startDate').text)
       @end_date = Date.parse(xml.at_xpath('dxp:endDate').text)
-      @points = xml.root.xpath('xmlns:entry').collect { |entry| DataPoint.new(entry) }
+      @points = xml.xpath('xmlns:entry').collect { |entry| DataPoint.new(entry) }
     end
 
     # Returns a string formatted as a CSV containing just the data points.
