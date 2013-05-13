@@ -136,11 +136,41 @@ module Gattica
     def get(args={})
       args = validate_and_clean(Settings::DEFAULT_ARGS.merge(args))
       query_string = build_query_string(args,@profile_id)
-      @logger.debug(query_string) if @debug
       create_http_connection('www.googleapis.com')
-      data = do_http_get("/analytics/v2.4/data?#{query_string}")
-      return DataSet.new(Nokogiri.XML(data).root)
-    end
+
+      results = nil
+      max_per_query = 10000
+
+      args[:max_results] = max_per_query if args[:max_results].nil?
+
+      while(true)        
+        query_string = build_query_string(args,@profile_id)
+        @logger.debug("Query String: " + query_string) if @debug
+
+        data = do_http_get("/analytics/v2.4/data?#{query_string}")
+        result = DataSet.new(Nokogiri.XML(data).root)
+        
+        #handle returning results
+        if !results.nil?
+          results.points.concat(result.points) 
+        else
+          results = result
+        end
+
+        count = result.points.count
+        #puts "No. of results in this query is: #{count}"
+
+        break if count < max_per_query
+
+        args[:start_index] = 0 if args[:start_index].nil?
+        args[:start_index] += max_per_query        
+      end 
+      
+      #puts "Net count of all results is #{results.points.count}"
+
+      return results
+    end    
+
 
 
     # Since google wants the token to appear in any HTTP call's header, we have to set that header
@@ -187,10 +217,9 @@ module Gattica
     # Sets up the HTTP headers that Google expects (this is called any time @token is set either by Gattica
     # or manually by the user since the header must include the token)
     def set_http_headers
-      @headers['Authorization'] = "GoogleLogin auth=#{@token}"
-      @headers['GData-Version']= '2'
+      @headers['Authorization'] = "Bearer #{@token}"
     end
-
+        
 
     # Creates a valid query string for GA
     def build_query_string(args,profile)
@@ -305,7 +334,7 @@ module Gattica
     # If the authorization is a email and password then create User objects
     # or if it's a previous token, use that.  Else, raise exception.
     def check_init_auth_requirements
-      if @options[:token].to_s.length > 200
+      if @options[:token]
         self.token = @options[:token]
       elsif @options[:email] && @options[:password]
         @user = User.new(@options[:email], @options[:password])
