@@ -17,10 +17,10 @@ module Gattica
       @updated = DateTime.parse(xml.at_xpath('xmlns:updated').text)
       @title = xml.at_xpath('xmlns:title').text
       @dimensions = xml.xpath('dxp:dimension').collect do |dimension|
-        { dimension.attributes['name'].split(':').last.to_sym => dimension.attributes['value'].split(':').last }
+        { dimension.attributes['name'].value.split(':').last.to_sym => dimension.attributes['value'].value.split(':').last }
       end
       @metrics = xml.xpath('dxp:metric').collect do |metric|
-        { metric.attributes['name'].split(':').last.to_sym => metric.attributes['value'].split(':').last.to_f }
+        { metric.attributes['name'].value.split(':').last.to_sym => metric.attributes['value'].value.split(':').last.to_f }
       end
     end
     
