@@ -5,10 +5,10 @@ module Gattica
     include Convertible
     
     attr_reader :total_results, :start_index, :items_per_page, :start_date,
-                :end_date, :points, :xml
+                :end_date, :points #, :xml
       
     def initialize(xml)
-      @xml = xml.to_s
+      #@xml = xml.to_s
       @total_results = xml.at_xpath('openSearch:totalResults').text.to_i
       @start_index = xml.at_xpath('openSearch:startIndex').text.to_i
       @items_per_page = xml.at_xpath('openSearch:itemsPerPage').text.to_i

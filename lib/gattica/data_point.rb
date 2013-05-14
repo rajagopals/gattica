@@ -8,11 +8,11 @@ module Gattica
     
     include Convertible
     
-    attr_reader :id, :updated, :title, :dimensions, :metrics, :xml
+    attr_reader :id, :updated, :title, :dimensions, :metrics #, :xml
     
     # Parses the XML <entry> element
     def initialize(xml)
-      @xml = xml.to_s
+      #@xml = xml.to_s
       @id = xml.at_xpath('xmlns:id').text
       @updated = DateTime.parse(xml.at_xpath('xmlns:updated').text)
       @title = xml.at_xpath('xmlns:title').text
