@@ -232,11 +232,6 @@ module Gattica
           "ga:#{dimension}"
         end.join(',')
       end
-      unless args[:filters].empty?
-        output += '&filters=' + args[:filters].collect do |filter, operator, value|
-          "ga:#{filter}#{URI::encode(operator)}#{value}"
-        end.join(',')
-      end
       unless args[:metrics].empty?
         output += '&metrics=' + args[:metrics].collect do |metric|
           "ga:#{metric}"
