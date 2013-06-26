@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'nokogiri'
+require 'ox'
 
 module Gattica
   class Profiles

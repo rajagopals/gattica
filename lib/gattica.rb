@@ -6,7 +6,7 @@ require 'uri'
 require 'cgi'
 require 'logger'
 require 'rubygems'
-require 'nokogiri'
+require 'ox'
 require 'yaml'
 
 require 'gattica/engine'

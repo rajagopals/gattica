@@ -49,21 +49,21 @@ module Gattica
 
         # get profiles
         response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles?max-results=10000")
-        xml = Nokogiri.XML(response)
+        xml = Ox.parse(response)
         @user_accounts = xml.root.xpath('xmlns:entry').collect { |profile_xml| 
           Account.new(profile_xml) 
         }
 
         # Fill in the goals
         # response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles/~all/goals?max-results=10000")
-        # xml = Nokogiri.XML(response)
+        # xml = Ox.parse(response)
         # @user_accounts.each do |ua|
         #   xml.root.xpath('xmlns:entry').each { |e| ua.set_goals(e) }
         # end
 
         # Fill in the account name
         response = do_http_get("/analytics/v2.4/management/accounts?max-results=10000")
-        xml = Nokogiri.XML(response)
+        xml = Ox.parse(response)
         @user_accounts.each do |ua|
           xml.root.xpath('xmlns:entry').each { |e| ua.set_account_name(e) }
         end
@@ -90,7 +90,7 @@ module Gattica
       if @user_segments.nil?
         create_http_connection('www.googleapis.com')
         response = do_http_get("/analytics/v2.4/management/segments?max-results=10000")
-        xml = Nokogiri.XML(response)
+        xml = Ox.parse(response)
         @user_segments = xml.root.xpath('dxp:segment').collect { |s| 
           Segment.new(s) 
         }
@@ -148,7 +148,7 @@ module Gattica
         @logger.debug("Query String: " + query_string) if @debug
 
         data = do_http_get("/analytics/v2.4/data?#{query_string}")
-        result = DataSet.new(Nokogiri.XML(data).root)
+        result = DataSet.new(Ox.parse(data).root)
         
         #handle returning results
         if !results.nil?
