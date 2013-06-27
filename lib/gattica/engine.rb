@@ -50,22 +50,22 @@ module Gattica
         # get profiles
         response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles?max-results=10000")
         xml = Ox.parse(response)
-        @user_accounts = xml.root.xpath('xmlns:entry').collect { |profile_xml| 
+        @user_accounts = xml.root.locate("entry").collect { |profile_xml| 
           Account.new(profile_xml) 
         }
 
         # Fill in the goals
-        # response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles/~all/goals?max-results=10000")
-        # xml = Ox.parse(response)
-        # @user_accounts.each do |ua|
-        #   xml.root.xpath('xmlns:entry').each { |e| ua.set_goals(e) }
-        # end
+        response = do_http_get("/analytics/v2.4/management/accounts/~all/webproperties/~all/profiles/~all/goals?max-results=10000")
+        xml = Ox.parse(response)
+        @user_accounts.each do |ua|
+          xml.root.locate("entry").each { |e| ua.set_goals(e) }
+        end
 
         # Fill in the account name
         response = do_http_get("/analytics/v2.4/management/accounts?max-results=10000")
         xml = Ox.parse(response)
         @user_accounts.each do |ua|
-          xml.root.xpath('xmlns:entry').each { |e| ua.set_account_name(e) }
+          xml.root.locate("entry").each { |e| ua.set_account_name(e) }
         end
 
       end
@@ -91,7 +91,7 @@ module Gattica
         create_http_connection('www.googleapis.com')
         response = do_http_get("/analytics/v2.4/management/segments?max-results=10000")
         xml = Ox.parse(response)
-        @user_segments = xml.root.xpath('dxp:segment').collect { |s| 
+        @user_segments = xml.root.locate('dxp:segment').collect { |s| 
           Segment.new(s) 
         }
       end
@@ -151,11 +151,7 @@ module Gattica
         result = DataSet.new(Ox.parse(data).root)
         
         #handle returning results
-        if !results.nil?
-          results.points.concat(result.points) 
-        else
-          results = result
-        end
+        yield result
 
         count = result.points.count
         #puts "No. of results in this query is: #{count}"
@@ -183,7 +179,7 @@ module Gattica
     end
 
     ######################################################################
-    private
+    
     
     # Add the Google API key to the query string, if one is specified in the options.
     

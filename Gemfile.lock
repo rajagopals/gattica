@@ -2,12 +2,13 @@ PATH
   remote: .
   specs:
     gattica (0.6.2)
-      hpricot
+      ox
 
 GEM
   remote: http://rubygems.org/
   specs:
     hpricot (0.8.6)
+    ox (2.0.4)
     test-unit (2.4.5)
 
 PLATFORMS

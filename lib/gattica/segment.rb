@@ -10,7 +10,7 @@ module Gattica
     def initialize(xml)
       @id = xml.attributes['id']
       @name = xml.attributes['name']
-      @definition = xml.at_xpath("dxp:definition").text
+      @definition = xml.locate("dxp:definition").first.text
     end
     
   end

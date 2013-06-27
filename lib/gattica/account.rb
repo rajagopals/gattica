@@ -6,31 +6,26 @@ module Gattica
                 :profile_id, :web_property_id, :goals
  
     def initialize(xml)
-      @id = xml.at_xpath("xmlns:link[@rel='self']").attributes['href'].value
-      @updated = DateTime.parse(xml.at_xpath('xmlns:updated').text)
+      @id = xml.locate("link").first.attributes[:href]
+      @updated = DateTime.parse(xml.locate('updated').first.text)
       @account_id = find_account_id(xml)
-
-      @title = xpath_value(xml, "dxp:property[@name='ga:profileName']")
-      @table_id = xpath_value(xml, "dxp:property[@name='dxp:tableId']")
+      @title = xml.locate("dxp:property").select{|x| x.attributes[:name]== "ga:profileName" }.first.attributes[:value]
+      @table_id = xml.locate("dxp:property").select{|x| x.attributes[:name]== "dxp:tableId" }.first.attributes[:value]
       @profile_id = find_profile_id(xml)
-      @web_property_id = xpath_value(xml, "dxp:property[@name='ga:webPropertyId']")
+      @web_property_id =xml.locate("dxp:property").select{|x| x.attributes[:name]== "ga:webPropertyId" }.first.attributes[:value]
       @goals = []
     end
 
-    def xpath_value(xml, xpath)
-      xml.at_xpath(xpath).attributes['value'].value
+    def find_profile_id(xml)
+      xml.locate("dxp:property").select{|x| x.attributes[:name]== "ga:profileId" }.first.attributes[:value]
     end
 
     def find_account_id(xml)
-      xml.at_xpath("dxp:property[@name='ga:accountId']").attributes['value'].value.to_i
+      xml.locate("dxp:property").select{|x| x.attributes[:name]== "ga:accountId" }.first.attributes[:value]
     end
 
     def find_account_name(xml)
-      xml.at_xpath("dxp:property[@name='ga:accountName']").attributes['value'].value
-    end
-
-    def find_profile_id(xml)
-      xml.at_xpath("dxp:property[@name='ga:profileId']").attributes['value'].value.to_i
+      xml.locate("dxp:property").select{|x| x.attributes[:name]== "ga:accountName" }.first.attributes[:value]
     end
 
     def set_account_name(account_feed_entry)
@@ -41,14 +36,15 @@ module Gattica
 
     def set_goals(goals_feed_entry)
       if @profile_id == find_profile_id(goals_feed_entry)
-        goal = goals_feed_entry.root.xpath('ga:goal').first
-        @goals.push({
-          :active => goal.attributes['active'].value,
-          :name => goal.attributes['name'].value,
-          :number => goal.attributes['number'].value.to_i,
-          :value => goal.attributes['value'].value.to_f
-        })
+        goals_feed_entry.locate('ga:goal').each do |g|
+          @goals.push({
+            :active => g.attributes[:active],
+            :name => g.attributes[:name],
+            :number => g.attributes[:number].to_i,
+            :value => g.attributes[:value].to_f
+          })
+        end
       end
-    end    
+    end
   end
 end

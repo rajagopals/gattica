@@ -8,13 +8,12 @@ module Gattica
                 :end_date, :points #, :xml
       
     def initialize(xml)
-      #@xml = xml.to_s
-      @total_results = xml.at_xpath('openSearch:totalResults').text.to_i
-      @start_index = xml.at_xpath('openSearch:startIndex').text.to_i
-      @items_per_page = xml.at_xpath('openSearch:itemsPerPage').text.to_i
-      @start_date = Date.parse(xml.at_xpath('dxp:startDate').text)
-      @end_date = Date.parse(xml.at_xpath('dxp:endDate').text)
-      @points = xml.xpath('xmlns:entry').collect { |entry| DataPoint.new(entry) }
+      @total_results = xml.locate('openSearch:totalResults').first.text.to_i
+      @start_index = xml.locate('openSearch:startIndex').first.text.to_i
+      @items_per_page = xml.locate('openSearch:itemsPerPage').first.text.to_i
+      @start_date = Date.parse(xml.locate('dxp:startDate').first.text)
+      @end_date = Date.parse(xml.locate('dxp:endDate').first.text)
+      @points = xml.locate('entry').collect { |entry| DataPoint.new(entry) }
     end
 
     # Returns a string formatted as a CSV containing just the data points.
