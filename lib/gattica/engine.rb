@@ -150,8 +150,15 @@ module Gattica
         data = do_http_get("/analytics/v2.4/data?#{query_string}")
         result = DataSet.new(Ox.parse(data).root)
         
-        #handle returning results
-        yield result
+        if block_given?
+          yield result
+        else
+          if !results.nil?
+            results.points.concat(result.points) 
+          else
+            results = result
+          end
+        end
 
         count = result.points.count
         #puts "No. of results in this query is: #{count}"
